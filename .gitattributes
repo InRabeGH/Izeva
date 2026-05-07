@@ -1,0 +1,28 @@
+# Auto-detect text files; normalize line endings to LF on commit.
+* text=auto eol=lf
+
+# Treat lockfiles as text but hide from PR diffs by default.
+bun.lock linguist-generated=true -diff
+package-lock.json linguist-generated=true -diff
+pnpm-lock.yaml linguist-generated=true -diff
+yarn.lock linguist-generated=true -diff
+
+# Generated migrations: keep diffable (we want to review them) but mark generated.
+drizzle/*.sql linguist-generated=true
+
+# Mark binaries (no diff, no merge attempts).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+
+# Shell scripts: enforce LF even on Windows checkouts.
+*.sh text eol=lf
