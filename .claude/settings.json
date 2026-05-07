@@ -1,0 +1,78 @@
+{
+    "$schema": "https://json.schemastore.org/claude-code-settings.json",
+    "permissions": {
+        "allow": [
+            "Bash(bun install)",
+            "Bash(bun add *)",
+            "Bash(bun remove *)",
+            "Bash(bun run *)",
+            "Bash(bun test*)",
+            "Bash(bunx shadcn *)",
+            "Bash(bunx neonctl *)",
+            "Bash(bunx drizzle-kit generate*)",
+            "Bash(bunx drizzle-kit migrate*)",
+            "Bash(bunx drizzle-kit studio*)",
+            "Bash(git status*)",
+            "Bash(git diff*)",
+            "Bash(git log*)",
+            "Bash(git show*)",
+            "Bash(git branch)",
+            "Bash(git branch --list*)",
+            "Bash(git remote -v)",
+            "Bash(git fetch*)",
+            "Bash(gh pr view*)",
+            "Bash(gh pr list*)",
+            "Bash(gh pr checks*)",
+            "Bash(gh issue view*)",
+            "Bash(gh issue list*)",
+            "Bash(gh repo view*)",
+            "Bash(gh run list*)",
+            "Bash(gh run view*)"
+        ],
+        "deny": [
+            "Bash(bun run db:push*)",
+            "Bash(bunx drizzle-kit push*)",
+            "Bash(npm install*)",
+            "Bash(npm i)",
+            "Bash(npm i *)",
+            "Bash(npm ci*)",
+            "Bash(pnpm install*)",
+            "Bash(pnpm i)",
+            "Bash(pnpm i *)",
+            "Bash(yarn)",
+            "Bash(yarn install*)",
+            "Bash(rm -rf*)",
+            "Bash(rm -fr*)",
+            "Bash(git push --force*)",
+            "Bash(git push -f*)",
+            "Bash(git reset --hard*)",
+            "Bash(git branch -D*)",
+            "Bash(git branch --delete*)",
+            "Bash(git clean -f*)"
+        ]
+    },
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/guard-bash.sh"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write|MultiEdit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": ".claude/hooks/format-on-edit.sh"
+                    }
+                ]
+            }
+        ]
+    }
+}
