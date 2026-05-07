@@ -1,0 +1,75 @@
+name: CI
+
+on:
+    push:
+        branches: [develop, main]
+    pull_request:
+        branches: [develop, main]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    quality:
+        name: Lint, Typecheck & Build
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            - name: Lint
+              run: bun run lint
+
+            - name: Typecheck
+              run: bun run typecheck
+
+            - name: Knip (unused code/deps)
+              run: bun run knip
+
+            - name: Test (unit, sin DB)
+              run: bun test tests/lib
+
+            - name: Build
+              run: bun run build
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://placeholder:placeholder@localhost:5432/placeholder' }}
+                  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'placeholder-secret-for-build-only-do-not-use' }}
+                  BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL || 'http://localhost:3000' }}
+                  NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' }}
+
+    test-db:
+        name: Tests con DB (Neon branch)
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: ${{ github.event_name == 'pull_request' }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            - name: Push schema a la branch de test
+              run: bun run db:push
+              env:
+                  DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+
+            - name: Test (DB)
+              run: bun run test:db
+              env:
+                  DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
