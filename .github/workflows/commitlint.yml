@@ -1,0 +1,35 @@
+name: Commitlint
+
+on:
+    pull_request:
+        branches: [develop, main]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    commitlint:
+        name: Validar commits
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
+
+            - name: Install dependencies
+              run: bun install --frozen-lockfile
+
+            - name: Validar mensajes de commit
+              run: |
+                  bunx commitlint \
+                      --from origin/${{ github.base_ref }} \
+                      --to HEAD \
+                      --verbose
