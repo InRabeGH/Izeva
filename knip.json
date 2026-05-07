@@ -1,0 +1,14 @@
+{
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "entry": ["lib/auth-client.ts", "lib/uploadthing.ts", "tests/**/*.test.ts"],
+    "project": ["app/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}", "tests/**/*.ts", "*.{ts,mjs,cjs}"],
+    "ignoreDependencies": [
+        "class-variance-authority",
+        "next-safe-action",
+        "radix-ui",
+        "tw-animate-css",
+        "zod"
+    ],
+    "ignoreExportsUsedInFile": true,
+    "tags": ["-public"]
+}
